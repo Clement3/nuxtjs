@@ -10,12 +10,14 @@ export const state = () => ({
 export const mutations = {
   SET_USER: function (state, user) {
     state.auth = user
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + user
   }
 }
 
 export const actions = {
   // nuxtServerInit is called by Nuxt.js before server-rendering every page
   nuxtServerInit({ commit }, { req }) {
+    console.log(process.env.apiUrl)
     if (req.headers.cookie) {
       let cookie = cookieparser.parse(req.headers.cookie) 
       if (cookie.auth) {
@@ -29,7 +31,7 @@ export const actions = {
       let grant_type = 'password'
       let client_id = '1'
       let client_secret = 'X9MNiYa1cnojmfmwl4GHgZjHN5OYzhODdZLpW1KF'  
-      const { data } = await axios.post('http://localhost:8000/oauth/token', { grant_type, client_id, client_secret, username, password })
+      const { data } = await axios.post('/oauth/token', { grant_type, client_id, client_secret, username, password })
       if (remember) {
         Cookies.set('auth', data.access_token)
       }
